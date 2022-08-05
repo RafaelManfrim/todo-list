@@ -8,10 +8,11 @@ SplashScreen.preventAutoHideAsync();
 export default function App() {
   let [fontsLoaded] = useFonts({ Inter_400Regular, Inter_700Bold })
 
-  if (!fontsLoaded) {
+  if (fontsLoaded) {
     SplashScreen.hideAsync()
+    return <Home />
+  } else {
+    return null
   }
-
-  return <Home />
 }
 

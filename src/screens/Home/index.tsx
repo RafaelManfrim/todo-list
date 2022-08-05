@@ -1,14 +1,17 @@
 import 'react-native-get-random-values';
 import { v4 as uuidV4 } from 'uuid';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Logo from "../../components/Logo"
 import ClipboardImg from "../../components/Clipboard"
 
 import { styles } from './styles';
+import { TasksInformation } from '../../components/TasksInformation';
+import { Task } from '../../components/Task';
 
 interface Task {
   id: string
@@ -21,6 +24,10 @@ export function Home() {
   const [taskName, setTaskName] = useState('')
 
   function handleAddNewTask() {
+    if (taskName.length < 1) {
+      return Alert.alert('Oops', 'Por favor digite o nome da tarefa.')
+    }
+
     const newTask: Task = {
       id: uuidV4(),
       title: taskName,
@@ -46,6 +53,20 @@ export function Home() {
     setTasks(prevState => prevState.filter(task => task.id !== id))
   }
 
+  useEffect(() => {
+    AsyncStorage.getItem('tasks').then(tasks => {
+      if (tasks) {
+        setTasks(JSON.parse(tasks))
+      }
+    }).catch(err => {
+      console.log(err)
+    })
+  }, [])
+
+  useEffect(() => {
+    AsyncStorage.setItem('tasks', JSON.stringify(tasks))
+  }, [tasks])
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="transparent" translucent style='light' />
@@ -66,12 +87,8 @@ export function Home() {
       </View>
       <View style={styles.list}>
         <View style={styles.listHeader}>
-          <Text>
-            Criadas {tasks.length}
-          </Text>
-          <Text>
-            Concluídas {tasks.filter(task => task.completed).length}
-          </Text>
+          <TasksInformation information='created' number={tasks.length} />
+          <TasksInformation information='completed' number={tasks.filter(task => task.completed).length} />
         </View>
         {tasks.length === 0 ? (
           <View style={styles.noTasksInformationContainer}>
@@ -80,7 +97,18 @@ export function Home() {
             <Text style={styles.noTasksInformationDescription}>Crie tarefas e organize seus itens a fazer</Text>
           </View>
         ) : (
-          <View></View>
+          <ScrollView>
+            {tasks.map(task => (
+              <Task
+                key={task.id}
+                id={task.id}
+                title={task.title}
+                completed={task.completed}
+                onChangeStatus={handleChangeTaskStatus}
+                onDelete={handleDeleteTask}
+              />
+            ))}
+          </ScrollView>
         )}
       </View>
     </View>

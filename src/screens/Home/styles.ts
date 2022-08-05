@@ -1,10 +1,7 @@
 import { Dimensions, StyleSheet } from "react-native";
 import { getStatusBarHeight } from "react-native-iphone-x-helper";
+import { lineHeight } from "../../functions/lineHeight";
 import { theme } from "../../styles/theme";
-
-function lineHeight(fontSize: number, percentage: number) {
-  return (fontSize * percentage / 100)
-}
 
 export const styles = StyleSheet.create({
   container: {
@@ -30,7 +27,8 @@ export const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 5,
     marginRight: 8,
-    fontFamily: theme.fonts.regular
+    fontFamily: theme.fonts.regular,
+    color: theme.colors.gray100
   },
   addButton: {
     backgroundColor: theme.colors.blueDark,
@@ -42,16 +40,17 @@ export const styles = StyleSheet.create({
   list: {
     width: '100%',
     justifyContent: 'center',
+    flex: 1,
   },
   listHeader: {
     flexDirection: 'row',
     paddingTop: 32,
     paddingBottom: 20,
     justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.gray400
   },
   noTasksInformationContainer: {
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.gray400,
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 48,
